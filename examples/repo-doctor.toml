@@ -1,0 +1,27 @@
+# Copy to .repo-doctor.toml in the root of your repository
+# (or put the same keys under [tool.repo-doctor] in pyproject.toml).
+
+# Checks to turn off, by ID or slug. `repo-doctor checks` lists them.
+disable = ["RD008", "readme-badges"]
+
+# Files above this size (in MB) are reported by RD014.
+large_file_mb = 10
+
+# Default for --fail-under.
+fail_under = 80
+
+# README sections RD002 requires: any of install, usage, license, contributing.
+readme_sections = ["install", "usage", "license"]
+
+# Set to false to never call the GitHub API, even when GITHUB_TOKEN is set.
+remote = true
+
+[secrets]
+# Glob patterns for files that may contain test credentials.
+allow_paths = ["tests/fixtures/**", "docs/examples/*.env"]
+# Regular expressions; a match on the value or the line suppresses a finding.
+allow_patterns = ["EXAMPLE[A-Z0-9]+"]
+
+[links]
+# Markdown files that are produced by a tool and may contain links that only work after publishing.
+ignore = ["docs/api/**"]

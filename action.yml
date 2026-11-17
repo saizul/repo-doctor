@@ -1,0 +1,88 @@
+name: repo-doctor
+description: Check a repository for open-source best practices, score it 0-100 and write a job summary.
+author: Saizul Amin
+branding:
+  icon: activity
+  color: green
+
+inputs:
+  path:
+    description: Repository folder to check.
+    default: "."
+  fail-under:
+    description: Fail the step when the score is below this value (0-100). Empty = never.
+    default: ""
+  fail-on:
+    description: Fail when a check of this severity or higher fails (high, medium or low). Empty = never.
+    default: ""
+  only:
+    description: Comma-separated check IDs or slugs to run.
+    default: ""
+  skip:
+    description: Comma-separated check IDs or slugs to skip.
+    default: ""
+  sarif-file:
+    description: Write a SARIF report to this path (upload it with github/codeql-action/upload-sarif).
+    default: ""
+  json-file:
+    description: Write a JSON report to this path.
+    default: ""
+  remote:
+    description: Run the GitHub API checks (description, topics, homepage, branch protection).
+    default: "true"
+  token:
+    description: Token for the GitHub API checks.
+    default: ${{ github.token }}
+  python-version:
+    description: Python version used to run repo-doctor.
+    default: "3.12"
+
+outputs:
+  score:
+    description: Score from 0 to 100.
+    value: ${{ steps.check.outputs.score }}
+  grade:
+    description: Letter grade (A-F).
+    value: ${{ steps.check.outputs.grade }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v7
+      id: python
+      with:
+        python-version: ${{ inputs.python-version }}
+        update-environment: false
+
+    - name: Install repo-doctor
+      shell: bash
+      env:
+        PYTHON: ${{ steps.python.outputs.python-path }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        "$PYTHON" -m venv "$RUNNER_TEMP/repo-doctor-venv"
+        "$RUNNER_TEMP/repo-doctor-venv/bin/python" -m pip install --quiet --disable-pip-version-check "$ACTION_PATH"
+
+    - name: Run repo-doctor
+      id: check
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_FAIL_UNDER: ${{ inputs.fail-under }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_ONLY: ${{ inputs.only }}
+        INPUT_SKIP: ${{ inputs.skip }}
+        INPUT_SARIF_FILE: ${{ inputs.sarif-file }}
+        INPUT_JSON_FILE: ${{ inputs.json-file }}
+        INPUT_REMOTE: ${{ inputs.remote }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: |
+        args=(check "$INPUT_PATH" --github-summary --no-color)
+        [ -n "$INPUT_FAIL_UNDER" ] && args+=(--fail-under "$INPUT_FAIL_UNDER")
+        [ -n "$INPUT_FAIL_ON" ] && args+=(--fail-on "$INPUT_FAIL_ON")
+        [ -n "$INPUT_ONLY" ] && args+=(--only "$INPUT_ONLY")
+        [ -n "$INPUT_SKIP" ] && args+=(--skip "$INPUT_SKIP")
+        [ -n "$INPUT_SARIF_FILE" ] && args+=(--sarif-file "$INPUT_SARIF_FILE")
+        [ -n "$INPUT_JSON_FILE" ] && args+=(--json-file "$INPUT_JSON_FILE")
+        [ "$INPUT_REMOTE" != "true" ] && args+=(--offline)
+        "$RUNNER_TEMP/repo-doctor-venv/bin/repo-doctor" "${args[@]}"

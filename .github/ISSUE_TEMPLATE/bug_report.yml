@@ -1,0 +1,35 @@
+name: Bug report
+description: repo-doctor crashed, reported something wrong or the fix command misbehaved
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: The exact command and its output. Remove tokens and private paths.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: repo
+    attributes:
+      label: How to reproduce
+      description: A public repository URL, or the files needed to reproduce (a minimal tree is perfect).
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: "Output of: repo-doctor --version"
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "Python 3.12, Ubuntu 24.04 / GitHub Action / Docker image"

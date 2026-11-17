@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+      - name: Ruff
+        run: |
+          ruff check .
+          ruff format --check .
+
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+      - name: Test
+        run: pytest
+      - name: CLI smoke test (offline)
+        run: |
+          repo-doctor --version
+          repo-doctor checks
+          repo-doctor check . --offline --fail-under 95
+          repo-doctor check . --offline -f sarif > "$RUNNER_TEMP/self.sarif"
+          python -c "import json,sys; d=json.load(open(sys.argv[1])); assert d['version'] == '2.1.0'" "$RUNNER_TEMP/self.sarif"
+          mkdir "$RUNNER_TEMP/empty" && cd "$RUNNER_TEMP/empty" && git init -q
+          set +e; repo-doctor check . --offline --fail-under 50; code=$?; set -e
+          test "$code" -eq 1
+          repo-doctor fix . --author "CI" --license Apache-2.0
+          repo-doctor check . --offline --fail-under 70
+      - name: docs/checks.md is up to date
+        run: |
+          repo-doctor checks -f markdown > "$RUNNER_TEMP/checks.md"
+          diff -u docs/checks.md "$RUNNER_TEMP/checks.md"
+
+  action:
+    name: Run the action on this repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - id: doctor
+        uses: ./
+        with:
+          fail-under: "90"
+          remote: "false"
+          sarif-file: repo-doctor.sarif
+      - run: echo "Score ${{ steps.doctor.outputs.score }} (grade ${{ steps.doctor.outputs.grade }})"
+      - run: test -s repo-doctor.sarif
+
+  docker:
+    name: Docker image build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t repo-doctor:ci .
+      - run: docker run --rm repo-doctor:ci --version
+      - run: docker run --rm -v "$PWD:/repo:ro" repo-doctor:ci check . --offline --fail-under 90

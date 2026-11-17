@@ -1,0 +1,25 @@
+name: False positive or false negative
+description: A check flagged something that is fine, or missed a real problem
+labels: ["false positive", "good first issue"]
+body:
+  - type: input
+    id: check
+    attributes:
+      label: Check ID
+      placeholder: "RD015"
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Input
+      description: The file name and the smallest content that triggers the problem. Never paste a real secret.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true

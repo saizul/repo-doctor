@@ -1,0 +1,45 @@
+name: New check proposal
+description: Suggest a best practice that repo-doctor should check (or fix)
+labels: ["new check"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Great checks are objective, fast, work offline and help most projects.
+        See "Add a new check" in CONTRIBUTING.md if you want to implement it.
+  - type: input
+    id: title
+    attributes:
+      label: Check title
+      placeholder: "Repository has a CITATION.cff"
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why does it matter?
+    validations:
+      required: true
+  - type: textarea
+    id: how
+    attributes:
+      label: How to detect it
+      description: Files, patterns, languages it applies to, and what counts as pass, warning and fail.
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Suggested severity
+      options: [high, medium, low]
+  - type: textarea
+    id: fix
+    attributes:
+      label: Can it be fixed automatically?
+      description: Which file would the fixer create? Fixers never overwrite existing files.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I would like to implement this check

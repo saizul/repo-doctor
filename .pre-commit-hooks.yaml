@@ -1,0 +1,14 @@
+- id: repo-doctor
+  name: repo-doctor
+  description: Check the repository for open-source best practices (offline, fails on high-severity problems).
+  entry: repo-doctor check --offline --fail-on high
+  language: python
+  pass_filenames: false
+  always_run: true
+- id: repo-doctor-secrets
+  name: repo-doctor secrets
+  description: Fail when tracked files contain something that looks like a credential.
+  entry: repo-doctor check --offline --only secrets --fail-on high
+  language: python
+  pass_filenames: false
+  always_run: true

@@ -1,0 +1,7 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/saizul/repo-doctor
+    rev: v0.1.0
+    hooks:
+      - id: repo-doctor-secrets   # fast: only the secret scanner
+      # - id: repo-doctor         # all offline checks, fails on high severity
