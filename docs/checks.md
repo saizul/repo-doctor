@@ -24,6 +24,7 @@ Severity weights for the score: high 10, medium 5, low 2. A warning earns half t
 | [RD021](#rd021) | `issue-templates` | low | community | `issue-templates` | Issue templates |
 | [RD022](#rd022) | `pr-template` | low | community | `pr-template` | Pull request template |
 | [RD023](#rd023) | `dependency-updates` | medium | security | `dependabot` | Automated dependency updates (Dependabot or Renovate) |
+| [RD024](#rd024) | `codeowners` | low | community |  | CODEOWNERS is valid |
 | [RD030](#rd030) | `package-metadata` | medium | metadata |  | Package metadata is complete |
 | [RD040](#rd040) | `github-description` | medium | metadata |  | GitHub repository has a description |
 | [RD041](#rd041) | `github-topics` | low | metadata |  | GitHub repository has topics |
@@ -247,6 +248,16 @@ Bots that open pull requests for outdated or vulnerable dependencies keep the pr
 **How to fix:** Add .github/dependabot.yml for your ecosystems, or a renovate.json.
 
 Auto-fix: `repo-doctor fix --only dependabot`
+
+<a id="rd024"></a>
+
+## RD024 CODEOWNERS is valid
+
+**Slug:** `codeowners` · **Severity:** low · **Category:** community
+
+GitHub silently ignores CODEOWNERS lines it cannot parse, so review requests and required code-owner reviews stop working without any warning. Patterns that match no file usually point at renamed or deleted paths.
+
+**How to fix:** Fix the reported lines: owners must be @user, @org/team or an email; CODEOWNERS does not support '!' or '[...]'. Keep a single CODEOWNERS file (.github/ takes precedence) and update stale paths.
 
 <a id="rd030"></a>
 

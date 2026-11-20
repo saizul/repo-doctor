@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `RD024` `codeowners` check: validates the CODEOWNERS file GitHub uses (`.github/`, root or
+  `docs/`). Lines GitHub would silently ignore fail the check (owners that are not `@user`,
+  `@org/team` or an email, `!` negation, `[...]` ranges); patterns that match no file and
+  extra CODEOWNERS files that GitHub ignores are reported as warnings. Repositories without
+  a CODEOWNERS file skip the check, so scores do not change.
+
 ## [0.1.0] - 2026-11-17
 
 ### Added
