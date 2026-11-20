@@ -6,7 +6,7 @@
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 **A health check for open-source repositories.** repo-doctor looks at any Git
-repository, scores it from 0 to 100 against 26 best-practice checks (README,
+repository, scores it from 0 to 100 against 27 best-practice checks (README,
 LICENSE, CI, security policy, secrets, broken links, package metadata, ...)
 and creates the missing files for you.
 
@@ -55,7 +55,7 @@ Works offline; GitHub API checks are optional.
 
 ## Features
 
-- **26 checks** with stable IDs, a severity, an explanation and a fix hint each ([full list](docs/checks.md))
+- **27 checks** with stable IDs, a severity, an explanation and a fix hint each ([full list](docs/checks.md))
 - **Score and grade** (0-100, A-F) weighted by severity, so you can track progress and gate CI with `--fail-under`
 - **Language aware**: detects Python, JavaScript/TypeScript, PHP, Go, Rust and Docker and tailors
   `.gitignore`, lockfile, metadata, Dependabot and CI checks
@@ -144,6 +144,7 @@ Lists every check (`-f json` and `-f markdown` are available too).
 | RD021 | Issue templates | low | yes |
 | RD022 | Pull request template | low | yes |
 | RD023 | Dependabot or Renovate | medium | yes |
+| RD024 | CODEOWNERS is valid: GitHub syntax, owner format, no stale patterns (skipped when absent) | low | |
 | RD030 | Package metadata is complete | medium | |
 | RD040 | GitHub description (needs `GITHUB_TOKEN`) | medium | |
 | RD041 | GitHub topics (needs `GITHUB_TOKEN`) | low | |
@@ -290,7 +291,7 @@ Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 ## Roadmap
 
 - More languages: Java/Kotlin (Maven, Gradle), Ruby, .NET, Swift
-- Checks for `CITATION.cff`, `CODEOWNERS`, `FUNDING.yml`, OpenSSF Scorecard basics, signed releases
+- Checks for `CITATION.cff`, `FUNDING.yml`, OpenSSF Scorecard basics, signed releases
 - `fix` for README sections and package metadata (with a preview diff)
 - Remote checks for GitLab and Gitea
 - Scanning Git history for secrets, not only the working tree
